@@ -21,31 +21,16 @@
 
 ## Overview 
 
-This app helps you in data exploration for labels distribution analysis. 
-
-It may be necessary for segmentation, detection and other computer vision tasks.
-
-This app works on selected datasets or on selected sample of all project data.
+This app helps you in data exploration for labels distribution analysis. It may be necessary for segmentation, detection and other computer vision tasks. This app works on selected datasets or on selected sample of all project data.
 
 ## How To Run
 
-### Step 1: Run from context menu of project
+1. Add app to your team from Ecosystem
+2. Be sure that you connected computer with GPU to your team by running Supervisely Agent on it
+3. Run app from context menu of images project
 
-Go to "Context Menu" (images project) -> "Report" -> "Labels spatial distribution"
+<img src="https://i.imgur.com/31rdu2F.png" />
 
-<img src="https://i.imgur.com/ydtdcAh.png" />
-
-### Step 2: Configure running settings
-
-Use default settings or change if it is necessary.
-
-<img src="https://i.imgur.com/qU8KrkW.jpg" />
-
-### Step 3:  Open app
-
-Once app is started, new page appear. You need to wait while application is starting. After that you will see full app page with some steps.
-
-<img src="https://i.imgur.com/BGZzUMt.jpg" />
 
 ## Screenshot
 
