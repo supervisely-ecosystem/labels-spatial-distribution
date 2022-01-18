@@ -1,6 +1,6 @@
 <div align="center" markdown> 
 
-<img src="https://imgur.com/MGi3NXG"/>
+<img src="https://i.imgur.com/MGi3NXG.jpg"/>
 
 # Labels spatial distribution
   
@@ -43,4 +43,4 @@ Once app is started, new task appear in workspace tasks. Monitor progress from b
 
 ## Screenshot
 
-<img src="https://imgur.com/G2hWaGf"/>
+<img src="https://i.imgur.com/G2hWaGf.png"/>
