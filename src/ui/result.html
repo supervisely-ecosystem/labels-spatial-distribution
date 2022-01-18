@@ -3,10 +3,10 @@
           :collapsed.sync="state.collapsed5"
           subtitle="Spatial label distribution on selected data">
 
-    <div v-for="item in data.resultFilenames" class="mb15" style="min-width:500px">
+    <div v-for="item in data.resultFilenames" class="mb15">
         <div style="font-size:16pt;font-weight:bold;">
             {{item.class}} class heatmap:
         </div>
-        <img :src="item.url" />
+        <img :src="item.url"/>
     </div>
 </sly-card>
