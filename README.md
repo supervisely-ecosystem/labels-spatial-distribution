@@ -33,13 +33,19 @@ This app works on selected datasets or on selected sample of all project data.
 
 Go to "Context Menu" (images project) -> "Report" -> "Labels spatial distribution"
 
+<img src="https://i.imgur.com/ydtdcAh.png" />
+
 ### Step 2: Configure running settings
 
 Use default settings or change if it is necessary.
 
+<img src="https://i.imgur.com/qU8KrkW.jpg" />
+
 ### Step 3:  Open app
 
 Once app is started, new task appear in workspace tasks. Monitor progress from both "Tasks" list and from application page. To open report in a new tab click "Open" button. 
+
+<img src="https://i.imgur.com/BGZzUMt.jpg" />
 
 ## Screenshot
 
