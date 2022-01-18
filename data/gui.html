@@ -1,0 +1,276 @@
+<div id="heatmap-app">
+    <sly-style>
+        #heatmap-app .el-tabs.el-tabs-cards .el-radio {
+        display: flex;
+        align-items: start;
+        /*margin-bottom: 10px;*/
+        margin-left: 0;
+        white-space: normal;
+        }
+
+        #heatmap-app .el-tabs.el-tabs-cards .el-radio__label div {
+        color: #7f858e;
+        font-size: 13px;
+        }
+
+        #heatmap-app .el-tabs.el-tabs-cards .el-radio__label {
+        line-height: 17px;
+        }
+
+        .beautiful-table { border-collapse: collapse; }
+        .beautiful-table tr:nth-child(2n) { background-color: #f6f8fa; }
+        .beautiful-table td, .beautiful-table th {
+        border: 1px solid #dfe2e5;
+        padding: 6px 13px;
+        text-align: center;
+        line-height: 20px;
+        }
+        .beautiful-table.al td, .beautiful-table.al th {
+        text-align: left;
+        }
+
+        #heatmap-app .el-tabs.el-tabs-cards { border-radius: 4px; box-shadow: none; }
+        #heatmap-app .el-tabs.el-tabs-cards .el-tabs__header { background-color: #f6fafd; }
+        #heatmap-app .el-tabs.el-tabs-cards .el-tabs__nav { float: none; display: flex; justify-content:
+        space-between; }
+        #heatmap-app .el-tabs.el-tabs-cards .el-tabs__item { flex: 1; margin-bottom: -3px; padding: 9px 16px
+        13px;
+        height: auto; line-height: normal; border-radius: 4px; }
+    </sly-style>
+
+    <sly-stepper :active="state.activeStep">
+
+        <sly-stepper-item>
+            <sly-card
+        title="Input Project"
+        subtitle="Select project to building heatmap"
+        :options="{collapsable: true}"
+        :collapsed.sync="state.collapsed1"
+        ref="step1"
+>
+    <sly-field title="" description="Project">
+        <a slot="title" target="_blank"
+           :href="`/projects/${data.projectId}/datasets`">{{data.projectName}} ({{data.projectImagesCount}}
+            images)</a>
+        <sly-icon slot="icon" :options="{ imageUrl: `${data.projectPreviewUrl}` }"/>
+    </sly-field>
+
+</sly-card>
+        </sly-stepper-item>
+        <sly-stepper-item>
+            <sly-card title="Data selection"
+          subtitle="Define what the labels you want to include to heatmap."
+          :options="{collapsable: true}"
+          :collapsed.sync="state.collapsed2"
+          ref="step2"
+>
+    <!--    v-model="state.splitMethod"-->
+    <el-tabs type="border-card" class="el-tabs-cards" v-model="state.splitMethod">
+        <el-tab-pane name="random" :disabled="data.done2">
+            <el-radio slot="label" v-model="state.splitMethod" label="random" :disabled="data.done2">
+                Random
+                <div>Select part of data to be used for building heatmap.</div>
+            </el-radio>
+            <el-table :data="data.randomSplit" class="ultra-table">
+                <el-table-column label="Info" width="180">
+                    <template scope="scope">
+                        <el-tag :type="scope.row.type">
+                            <i v-if="scope.row.name !== 'total'" class="zmdi zmdi-tag mr5"></i>{{scope.row.name}}
+                        </el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column label="Number of images" width="180">
+                    <template scope="scope">
+                        <span style="margin-left: 10px">{{state.randomSplit.count[scope.row.name]}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="Percent of images">
+                    <template scope="scope">
+                        <div v-if="scope.row.name !== 'included_data'">
+                            <span style="margin-left: 10px">{{state.randomSplit.percent[scope.row.name]}}%</span>
+                        </div>
+                        <el-slider v-if="scope.row.name === 'included_data'"
+                                   v-model="state.randomSplit.percent.included_data"
+                                   :disabled="state.randomSplit.sliderDisabled || data.done2"
+                                   show-input :min="1" :max="100"
+                                   style="flex:1; max-width: 99%; margin-left: 15px;"
+                                   @input="
+                                   state.randomSplit.count.included_data =
+                                   Math.round(parseInt(data.totalImagesCount * state.randomSplit.percent.included_data / 100, 10));
+                                   state.randomSplit.count.included_data = Math.max(state.randomSplit.count.included_data, 1)"
+                        ></el-slider>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-tab-pane>
+
+        <el-tab-pane name="datasets" :disabled="data.done2">
+            <el-radio slot="label" v-model="state.splitMethod" label="datasets" :disabled="data.done2">
+                Based on datasets
+                <div>Select one or several datasets</div>
+            </el-radio>
+
+            <sly-field title="Dataset(s) to heatmap"
+                       description="all labels in selected dataset(s) are included to build heatmap ">
+                <sly-select-dataset
+                        :disabled="data.done2"
+                        :project-id="data.projectId"
+                        :datasets.sync="state.datasets"
+                        :options="{'multiple': true, 'showLabel': false}">
+                </sly-select-dataset>
+            </sly-field>
+        </el-tab-pane>
+    </el-tabs>
+
+    <el-button
+            type="primary"
+            class="mt10 regular"
+            v-if="!data.done2"
+            @click="command('create_splits')">
+        Create
+    </el-button>
+
+    <div v-if="data.done2" class="mt10">
+        <div>
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">
+                Data have been selected successfully.
+            </span>
+        </div>
+        <el-button type="warning" class="regular mt10" :plain="true"
+                   @click="state.restartFrom = 2;"
+                   v-if="data.done2">
+            <i class="zmdi zmdi-rotate-left mr5"></i> Reselect data
+        </el-button>
+    </div>
+</sly-card>
+        </sly-stepper-item>
+        <sly-stepper-item>
+            <sly-card title="Classes selection"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.collapsed3"
+          subtitle="Select classes, that should be used for heatmap building.">
+    <el-table
+            class="ultra-table"
+            :data="data.classes"
+            style="width: 100%"
+            max-height="500"
+            @selection-change="
+                (val) => {
+                    state.selectedClasses = val.map(x => x.title);
+                }
+                "
+    >
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column label="Name" prop="title" sortable>
+            <template scope="scope">
+                <i class="zmdi zmdi-circle mr5" :style="{color: scope.row.color}"></i>
+                {{ scope.row.title }}
+            </template>
+        </el-table-column>
+        <el-table-column prop="shape" label="Shape" sortable width="180"></el-table-column>
+        <el-table-column prop="imagesCount" label="Images count" sortable width="150"></el-table-column>
+        <el-table-column prop="objectsCount" label="Objects count" sortable width="180"></el-table-column>
+    </el-table>
+
+    <el-button
+        type="primary"
+        class="mt10 regular"
+        v-if="!data.done3"
+        :disabled="state.selectedClasses.length < 1"
+        @click="command('select_classes')">
+        Select classes
+    </el-button>
+
+    <div v-if="data.done3" class="mt10">
+        <div>
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">
+                Classes have been selected successfully.
+            </span>
+        </div>
+        <el-button type="warning" class="regular mt10" :plain="true"
+                   @click="state.restartFrom = 3;"
+                   v-if="data.done3">
+            <i class="zmdi zmdi-rotate-left mr5"></i> Reselect classes
+        </el-button>
+    </div>
+</sly-card>
+        </sly-stepper-item>
+        <sly-stepper-item>
+            <sly-card title="Heatmap building"
+          :disabled="data.done4"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.collapsed4"
+          subtitle="Start heatmap building">
+
+
+    <div v-if="state.progressAvgSize" class="mt10">
+        <div style="color: #20a0ff">
+            Average image size calculation: {{state.progressCurrentAvgSize}} / {{state.progressTotalAvgSize}}
+        </div>
+        <el-progress :percentage="state.progressPercentAvgSize"></el-progress>
+    </div>
+
+    <div v-if="state.progressHeatmap" class="mt10">
+        <div style="color: #20a0ff">
+            Label spatial distribution heatmap building on {{state.currentClass}} class: {{state.progressCurrentHeatmap}} / {{state.progressTotalHeatmap}}
+        </div>
+        <el-progress :percentage="state.progressPercentHeatmap"></el-progress>
+    </div>
+
+    <el-button
+        type="primary"
+        class="mt10 regular"
+        :loading="state.heatmapInProgress"
+        v-if="!data.done4"
+        @click="command('build_heatmap')">
+        Create
+    </el-button>
+
+    <div v-if="data.done4" class="mt10">
+        <div>
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">
+                Heatmaps for each class have been generated successfully.
+            </span>
+        </div>
+        <el-button type="warning" class="regular mt10" :plain="true"
+                   @click="state.restartFrom = 4;"
+                   v-if="data.done4">
+            <i class="zmdi zmdi-rotate-left mr5"></i> Regenerate heatmap
+        </el-button>
+    </div>
+</sly-card>
+        </sly-stepper-item>
+        <sly-stepper-item>
+            <sly-card title="Result heatmap"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.collapsed5"
+          subtitle="Spatial label distribution on selected data">
+
+    <div v-for="item in data.resultFilenames" class="mb15">
+        <div style="font-size:16pt;font-weight:bold;">
+            {{item.class}} class heatmap:
+        </div>
+        <img :src="item.url" />
+    </div>
+</sly-card>
+        </sly-stepper-item>
+    </sly-stepper>
+
+    <el-dialog
+            title="Restart from this step"
+            :visible.sync="state.restartFrom"
+            size="tiny">
+        <span>This step and all next steps will be reseted</span>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="state.restartFrom = null">Cancel</el-button>
+            <!--        $nextTick(() => { $refs['card3'].$el.scrollIntoView({behavior: 'smooth', block: 'center'}); });-->
+            <el-button type="primary" class="regular"
+                       @click="command('restart');">
+                Confirm
+            </el-button>
+        </span>
+    </el-dialog>
+</div>

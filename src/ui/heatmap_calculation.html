@@ -1,0 +1,44 @@
+<sly-card title="Heatmap building"
+          :disabled="data.done4"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.collapsed4"
+          subtitle="Start heatmap building">
+
+
+    <div v-if="state.progressAvgSize" class="mt10">
+        <div style="color: #20a0ff">
+            Average image size calculation: {{state.progressCurrentAvgSize}} / {{state.progressTotalAvgSize}}
+        </div>
+        <el-progress :percentage="state.progressPercentAvgSize"></el-progress>
+    </div>
+
+    <div v-if="state.progressHeatmap" class="mt10">
+        <div style="color: #20a0ff">
+            Label spatial distribution heatmap building on {{state.currentClass}} class: {{state.progressCurrentHeatmap}} / {{state.progressTotalHeatmap}}
+        </div>
+        <el-progress :percentage="state.progressPercentHeatmap"></el-progress>
+    </div>
+
+    <el-button
+        type="primary"
+        class="mt10 regular"
+        :loading="state.heatmapInProgress"
+        v-if="!data.done4"
+        @click="command('build_heatmap')">
+        Create
+    </el-button>
+
+    <div v-if="data.done4" class="mt10">
+        <div>
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">
+                Heatmaps for each class have been generated successfully.
+            </span>
+        </div>
+        <el-button type="warning" class="regular mt10" :plain="true"
+                   @click="state.restartFrom = 4;"
+                   v-if="data.done4">
+            <i class="zmdi zmdi-rotate-left mr5"></i> Regenerate heatmap
+        </el-button>
+    </div>
+</sly-card>
