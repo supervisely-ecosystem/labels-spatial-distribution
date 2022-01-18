@@ -43,7 +43,7 @@ Use default settings or change if it is necessary.
 
 ### Step 3:  Open app
 
-Once app is started, new task appear in workspace tasks. Monitor progress from both "Tasks" list and from application page. To open report in a new tab click "Open" button. 
+Once app is started, new page appear. You need to wait while application is starting. After that you will see full app page with some steps.
 
 <img src="https://i.imgur.com/BGZzUMt.jpg" />
 
