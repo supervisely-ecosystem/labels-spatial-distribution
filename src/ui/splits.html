@@ -31,7 +31,7 @@
                         </div>
                         <el-slider v-if="scope.row.name === 'included_data'"
                                    v-model="state.randomSplit.percent.included_data"
-                                   :disabled="state.randomSplit.sliderDisabled || data.done2"
+                                   :disabled="data.done2"
                                    show-input :min="1" :max="100"
                                    style="flex:1; max-width: 99%; margin-left: 15px;"
                                    @input="

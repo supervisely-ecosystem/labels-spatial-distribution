@@ -12,9 +12,16 @@
         <el-progress :percentage="state.progressPercentAvgSize"></el-progress>
     </div>
 
+    <div v-if="state.progressClasses" class="mt10">
+        <div style="color: #20a0ff">
+            Current class {{state.currentClass}}: {{state.progressCurrentClasses}} / {{state.progressTotalClasses}}
+        </div>
+        <el-progress :percentage="state.progressPercentClasses"></el-progress>
+    </div>
+
     <div v-if="state.progressHeatmap" class="mt10">
         <div style="color: #20a0ff">
-            Label spatial distribution heatmap building on {{state.currentClass}} class: {{state.progressCurrentHeatmap}} / {{state.progressTotalHeatmap}}
+            Label spatial distribution heatmap building: {{state.progressCurrentHeatmap}} / {{state.progressTotalHeatmap}}
         </div>
         <el-progress :percentage="state.progressPercentHeatmap"></el-progress>
     </div>

@@ -1,21 +1,22 @@
 {
-  "name": "Label distribution heatmap",
+  "name": "Labels spatial distribution",
   "type": "app",
   "categories": [
     "report",
     "images",
     "data exploration"
   ],
-  "description": "Build label distribution heatmap for dataset.",
-  "docker_image": "supervisely/base-py-sdk:6.3.0",
+  "description": "Build labels distribution heatmap for dataset.",
+  "docker_image": "supervisely/base-py-sdk:6.4.3",
   "main_script": "src/main.py",
   "gui_template": "src/gui.html",
   "task_location": "application_sessions",
   "isolate": true,
-  "icon": "",
   "context_menu": {
     "target": ["images_project"],
     "context_root": "Report"
   },
+  "icon": "https://i.imgur.com/hH7CUDa.png",
+  "icon_cover": true,
   "icon_background": "#FFFFFF"
 }

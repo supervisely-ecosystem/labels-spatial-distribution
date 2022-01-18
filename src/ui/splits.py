@@ -23,13 +23,10 @@ def init(project_info, project_meta: sly.ProjectMeta, data, state):
             "total": 100,
             "included_data": train_percent
         },
-        "shareImagesBetweenSplits": False,
-        "sliderDisabled": False,
     }
 
     state["splitMethod"] = "random"
     state["datasets"] = []
-    state["untaggedImages"] = "train"
     state["imagesCount"] = None
     data["done2"] = False
     state["collapsed2"] = True

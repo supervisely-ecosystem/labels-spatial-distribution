@@ -2,7 +2,6 @@ import supervisely_lib as sly
 import matplotlib.pyplot as plt
 import numpy as np
 import sly_globals as g
-from functools import partial
 import random
 from datetime import datetime
 import os
@@ -18,6 +17,7 @@ def init_progress(index, state):
 def init(data, state):
     init_progress("AvgSize", state)
     init_progress("Heatmap", state)
+    init_progress("Classes", state)
     state["heatmapInProgress"] = False
     data["done4"] = False
     data["avgSize"] = None
@@ -59,7 +59,7 @@ def calculate_avg_img_size(datasets, imagesCount, imagesPart, max_imgs_for_avera
     avg_img_size = (sizes[:, 0].mean().astype(np.int32).item(), sizes[:, 1].mean().astype(np.int32).item())
     return avg_img_size
 
-def get_heatmap_image(api, state, class_name, avg_img_size):
+def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
     datasets_to_heatmap = state["datasets"]
     imagesCount = state["imagesCount"]
     geometry_types_to_heatmap = ["polygon", "rectangle", "bitmap"]
@@ -74,9 +74,14 @@ def get_heatmap_image(api, state, class_name, avg_img_size):
         datasets = api.dataset.get_list(g.project_info.id)
     if avg_img_size is None:
         avg_img_size = calculate_avg_img_size(datasets, imagesCount, imagesPart)
+
     g.api.app.set_field(g.task_id, "state.progressHeatmap", True)
+    g.api.app.set_field(g.task_id, "state.progressClasses", True)
     g.api.app.set_field(g.task_id, "state.progressTotalHeatmap", imagesCount)
+    g.api.app.set_field(g.task_id, "state.progressTotalClasses", len(state["selectedClasses"]))
     g.api.app.set_field(g.task_id, "state.currentClass", class_name)
+    g.api.app.set_field(g.task_id, "state.progressCurrentClasses", class_idx + 1)
+    g.api.app.set_field(g.task_id, "state.progressPercentClasses", int((class_idx + 1) / len(state["selectedClasses"]) * 100))
 
     heatmap = np.zeros(avg_img_size + (3,), dtype=np.float32)
     included_images = 0
@@ -108,10 +113,10 @@ def get_heatmap_image(api, state, class_name, avg_img_size):
                         label.draw(temp_canvas, color=(1, 1, 1))
                 heatmap += temp_canvas
 
-    g.api.app.set_field(g.task_id, "state.progressHeatmap", False)
+
     os.makedirs("imgs", exist_ok=True)
     local_filename = os.path.join("imgs", f"heatmap_{class_name}_{datetime.now()}.png")
-    fig = plt.figure(figsize=(avg_img_size[1] / 120.0, avg_img_size[0] / 120.0))
+    fig = plt.figure(figsize=(avg_img_size[1] / 80.0, avg_img_size[0] / 80.0))
 
     plt.imshow(heatmap[:,:,0], cmap=cmap)
     plt.colorbar(cmap=cmap)
@@ -129,10 +134,9 @@ def build_heatmap(api: sly.Api, task_id, context, state, app_logger):
     avg_img_size = None
     try:
         classes = state["selectedClasses"]
-        for class_name in classes:
-            heatmap, filename, avg_img_size = get_heatmap_image(api, state, class_name, avg_img_size)
+        for class_idx, class_name in enumerate(classes):
+            heatmap, filename, avg_img_size = get_heatmap_image(api, state, class_name, class_idx, avg_img_size)
             file_info = api.file.upload(g.team_id, filename, filename)
-
             filenames.append({"class": class_name, "url": file_info.full_storage_url})
         step_done = True
     except Exception as e:
