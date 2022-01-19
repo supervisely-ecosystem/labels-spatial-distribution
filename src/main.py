@@ -9,13 +9,12 @@ def main():
         "modal.state.slyProjectId": g.project_id,
     })
 
-    g.my_app.compile_template(g.root_source_dir)
-
     data = {}
     state = {}
     data["taskId"] = g.task_id
 
     ui.init(data, state)  # init data for UI widgets
+    g.my_app.compile_template(g.root_source_dir)
     g.my_app.run(data=data, state=state)
 
 if __name__ == "__main__":
