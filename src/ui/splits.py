@@ -29,8 +29,9 @@ def init(project_info, project_meta: sly.ProjectMeta, data, state):
     state["datasets"] = []
     state["imagesCount"] = None
     data["done2"] = False
-    state["collapsed2"] = True
-    state["disabled2"] = True
+    state["collapsed2"] = False
+    state["disabled2"] = False
+    state["activeStep"] = 2
 
 
 @g.my_app.callback("create_splits")

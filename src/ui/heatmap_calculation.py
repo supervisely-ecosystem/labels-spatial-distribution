@@ -27,8 +27,11 @@ def init(data, state):
 
 
 def calculate_avg_img_size(datasets, imagesCount, imagesPart, max_imgs_for_average = 30):
-    g.api.app.set_field(g.task_id, "state.progressAvgSize", True)
-    g.api.app.set_field(g.task_id, "state.progressTotalAvgSize", min(imagesCount, max_imgs_for_average))
+    fields = [
+        {"field": "state.progressAvgSize", "payload": True},
+        {"field": "state.progressTotalAvgSize", "payload": min(imagesCount, max_imgs_for_average)},
+    ]
+    g.api.app.set_fields(g.task_id, fields)
     sizes = []
     included_images = 0
 
@@ -48,11 +51,13 @@ def calculate_avg_img_size(datasets, imagesCount, imagesPart, max_imgs_for_avera
                 images = images[:img_cnt]
 
         for img_idx, item_name in enumerate(images):
-            included_images += 1
-            g.api.app.set_field(g.task_id, "state.progressCurrentAvgSize", included_images)
-            g.api.app.set_field(g.task_id, "state.progressPercentAvgSize",
-                                int(included_images / min(imagesCount, max_imgs_for_average) * 100))
             sizes.append((item_name.height, item_name.width))
+            included_images += 1
+            fields = [
+                {"field": "state.progressCurrentAvgSize", "payload": included_images},
+                {"field": "state.progressPercentAvgSize", "payload": int(included_images / min(imagesCount, max_imgs_for_average) * 100)},
+            ]
+            g.api.app.set_fields(g.task_id, fields)
 
     g.api.app.set_field(g.task_id, "state.progressAvgSize", False)
     sizes = np.array(sizes)
@@ -75,13 +80,16 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
     if avg_img_size is None:
         avg_img_size = calculate_avg_img_size(datasets, imagesCount, imagesPart)
 
-    g.api.app.set_field(g.task_id, "state.progressHeatmap", True)
-    g.api.app.set_field(g.task_id, "state.progressClasses", True)
-    g.api.app.set_field(g.task_id, "state.progressTotalHeatmap", imagesCount)
-    g.api.app.set_field(g.task_id, "state.progressTotalClasses", len(state["selectedClasses"]))
-    g.api.app.set_field(g.task_id, "state.currentClass", class_name)
-    g.api.app.set_field(g.task_id, "state.progressCurrentClasses", class_idx + 1)
-    g.api.app.set_field(g.task_id, "state.progressPercentClasses", int((class_idx + 1) / len(state["selectedClasses"]) * 100))
+    fields = [
+        {"field": "state.progressHeatmap", "payload": True},
+        {"field": "state.progressClasses", "payload": True},
+        {"field": "state.progressTotalHeatmap", "payload": imagesCount},
+        {"field": "state.progressTotalClasses", "payload": len(state["selectedClasses"])},
+        {"field": "state.currentClass", "payload": class_name},
+        {"field": "state.progressCurrentClasses", "payload": class_idx + 1},
+        {"field": "state.progressPercentClasses", "payload": int((class_idx + 1) / len(state["selectedClasses"]) * 100)},
+    ]
+    g.api.app.set_fields(g.task_id, fields)
 
     heatmap = np.zeros(avg_img_size + (3,), dtype=np.float32)
     included_images = 0
@@ -97,10 +105,6 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
                 images = images[:img_cnt]
 
         for img_idx, item_infos in enumerate(sly.batched(images)):
-            included_images += len(item_infos)
-            g.api.app.set_field(g.task_id, "state.progressCurrentHeatmap", included_images)
-            g.api.app.set_field(g.task_id, "state.progressPercentHeatmap", int(included_images / imagesCount * 100))
-
             img_ids = [x.id for x in item_infos]
             ann_infos = api.annotation.download_batch(dataset.id, img_ids)
             anns = [sly.Annotation.from_json(x.annotation, meta) for x in ann_infos]
@@ -112,6 +116,13 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
                         ann = ann.delete_label(label)
                         label.draw(temp_canvas, color=(1, 1, 1))
                 heatmap += temp_canvas
+
+            included_images += len(item_infos)
+            fields = [
+                {"field": "state.progressCurrentHeatmap", "payload": included_images},
+                {"field": "state.progressPercentHeatmap", "payload": int(included_images / imagesCount * 100)},
+            ]
+            g.api.app.set_fields(g.task_id, fields)
 
 
     os.makedirs("imgs", exist_ok=True)
