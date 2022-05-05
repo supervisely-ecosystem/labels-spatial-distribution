@@ -13,10 +13,13 @@
   "task_location": "workspace_tasks",
   "isolate": true,
   "context_menu": {
-    "target": ["images_project"],
+    "target": [
+      "images_project"
+    ],
     "context_root": "Report"
   },
   "icon": "https://i.imgur.com/hH7CUDa.png",
   "icon_cover": true,
-  "icon_background": "#FFFFFF"
+  "icon_background": "#FFFFFF",
+  "poster": "https://i.imgur.com/MGi3NXG.jpg"
 }
