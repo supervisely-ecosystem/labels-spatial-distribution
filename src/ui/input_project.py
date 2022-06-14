@@ -1,5 +1,6 @@
 import sly_globals as g
 
+
 def init(data, state):
     data["projectId"] = g.project_info.id
     data["projectName"] = g.project_info.name

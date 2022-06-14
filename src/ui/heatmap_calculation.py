@@ -1,4 +1,4 @@
-import supervisely_lib as sly
+import supervisely as sly
 import matplotlib.pyplot as plt
 import numpy as np
 import sly_globals as g
@@ -148,7 +148,7 @@ def build_heatmap(api: sly.Api, task_id, context, state, app_logger):
         for class_idx, class_name in enumerate(classes):
             heatmap, filename, avg_img_size = get_heatmap_image(api, state, class_name, class_idx, avg_img_size)
             file_info = api.file.upload(g.team_id, filename, filename)
-            filenames.append({"class": class_name, "url": file_info.full_storage_url})
+            filenames.append({"class": class_name, "url": file_info.storage_path})
         step_done = True
     except Exception as e:
         step_done = False
