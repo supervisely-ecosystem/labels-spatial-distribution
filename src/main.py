@@ -1,6 +1,7 @@
-import supervisely_lib as sly
+import supervisely as sly
 import sly_globals as g
 import ui as ui
+
 
 def main():
     sly.logger.info("Script arguments", extra={
@@ -17,7 +18,6 @@ def main():
     g.my_app.compile_template(g.root_source_dir)
     g.my_app.run(data=data, state=state)
 
+
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
-
-
