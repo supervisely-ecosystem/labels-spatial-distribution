@@ -2,9 +2,10 @@
   "name": "Labels spatial distribution",
   "type": "app",
   "categories": [
-    "report",
     "images",
-    "data exploration"
+    "visualization",
+    "exploration",
+    "statistics"
   ],
   "description": "Build labels distribution heatmap for dataset.",
   "docker_image": "supervisely/base-py-sdk:6.23.1",
