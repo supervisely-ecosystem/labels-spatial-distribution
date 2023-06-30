@@ -1,6 +1,6 @@
 <div align="center" markdown> 
 
-<img src="https://i.imgur.com/MGi3NXG.jpg"/>
+<img src="media/poster.jpeg"/>
 
 # Labels spatial distribution
   
@@ -28,9 +28,9 @@ This app helps you in data exploration for labels distribution analysis. It may 
 2. Be sure that you connected computer with GPU to your team by running Supervisely Agent on it
 3. Run app from context menu of images project
 
-<img src="https://i.imgur.com/31rdu2F.png" />
+<img src="media/htr1.png" />
 
 
 ## Screenshot
 
-<img src="https://i.imgur.com/G2hWaGf.png"/>
+<img src="media/s1.png"/>
