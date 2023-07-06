@@ -21,8 +21,8 @@
     ],
     "context_root": "Report"
   },
-  "icon": "https://i.imgur.com/hH7CUDa.png",
+  "icon": "media/icon.png",
   "icon_cover": true,
   "icon_background": "#FFFFFF",
-  "poster": "https://i.imgur.com/MGi3NXG.jpg"
+  "poster": "media/poster.jpeg"
 }
