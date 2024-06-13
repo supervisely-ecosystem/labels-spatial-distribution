@@ -2,8 +2,7 @@ import os
 import random
 from datetime import datetime
 
-import matplotlib
-import matplotlib.pyplot
+import matplotlib.pyplot as plt
 import numpy as np
 import supervisely as sly
 
@@ -78,7 +77,7 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
     datasets_to_heatmap = state["datasets"]
     imagesCount = state["imagesCount"]
     geometry_types_to_heatmap = ["polygon", "rectangle", "bitmap"]
-    cmap = matplotlib.colormaps.get_cmap("viridis")
+    cmap = plt.cm.get_cmap("viridis")
     meta_json = api.project.get_meta(g.project_info.id)
     meta = sly.ProjectMeta.from_json(meta_json)
     imagesPart = imagesCount / g.project_info.items_count
@@ -149,12 +148,12 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
 
     os.makedirs("imgs", exist_ok=True)
     local_filename = os.path.join("imgs", f"heatmap_{class_name}_{datetime.now()}.png")
-    fig = matplotlib.pyplot.figure(figsize=(avg_img_size[1] / 80.0, avg_img_size[0] / 80.0))
+    fig = plt.figure(figsize=(avg_img_size[1] / 80.0, avg_img_size[0] / 80.0))
 
-    matplotlib.pyplot.imshow(heatmap[:, :, 0], cmap=cmap)
-    matplotlib.pyplot.colorbar(cmap=cmap)
-    # matplotlib.pyplot.savefig(local_filename, fig=fig, bbox_inches="tight", pad_inches=0)
-    fig.savefig(local_filename, bbox_inches="tight", pad_inches=0)
+    plt.imshow(heatmap[:, :, 0], cmap=cmap)
+    plt.colorbar(cmap=cmap)
+    plt.savefig(local_filename, fig=fig, bbox_inches="tight", pad_inches=0)
+
     return heatmap, local_filename, avg_img_size
 
 
