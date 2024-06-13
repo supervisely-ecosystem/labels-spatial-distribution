@@ -1,10 +1,12 @@
-import supervisely as sly
-import matplotlib.pyplot as plt
-import numpy as np
-import sly_globals as g
+import os
 import random
 from datetime import datetime
-import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+import supervisely as sly
+
+import sly_globals as g
 
 
 def init_progress(index, state):
@@ -26,7 +28,7 @@ def init(data, state):
     state["disabled4"] = True
 
 
-def calculate_avg_img_size(datasets, imagesCount, imagesPart, max_imgs_for_average = 30):
+def calculate_avg_img_size(datasets, imagesCount, imagesPart, max_imgs_for_average=30):
     fields = [
         {"field": "state.progressAvgSize", "payload": True},
         {"field": "state.progressTotalAvgSize", "payload": min(imagesCount, max_imgs_for_average)},
@@ -55,26 +57,37 @@ def calculate_avg_img_size(datasets, imagesCount, imagesPart, max_imgs_for_avera
             included_images += 1
             fields = [
                 {"field": "state.progressCurrentAvgSize", "payload": included_images},
-                {"field": "state.progressPercentAvgSize", "payload": int(included_images / min(imagesCount, max_imgs_for_average) * 100)},
+                {
+                    "field": "state.progressPercentAvgSize",
+                    "payload": int(included_images / min(imagesCount, max_imgs_for_average) * 100),
+                },
             ]
             g.api.app.set_fields(g.task_id, fields)
 
     g.api.app.set_field(g.task_id, "state.progressAvgSize", False)
     sizes = np.array(sizes)
-    avg_img_size = (sizes[:, 0].mean().astype(np.int32).item(), sizes[:, 1].mean().astype(np.int32).item())
+    avg_img_size = (
+        sizes[:, 0].mean().astype(np.int32).item(),
+        sizes[:, 1].mean().astype(np.int32).item(),
+    )
     return avg_img_size
+
 
 def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
     datasets_to_heatmap = state["datasets"]
     imagesCount = state["imagesCount"]
     geometry_types_to_heatmap = ["polygon", "rectangle", "bitmap"]
-    cmap = plt.cm.get_cmap('viridis')
+    cmap = plt.cm.get_cmap("viridis")
     meta_json = api.project.get_meta(g.project_info.id)
     meta = sly.ProjectMeta.from_json(meta_json)
     imagesPart = imagesCount / g.project_info.items_count
 
     if datasets_to_heatmap:
-        datasets = [dataset for dataset in api.dataset.get_list(g.project_info.id) if dataset.name in datasets_to_heatmap]
+        datasets = [
+            dataset
+            for dataset in api.dataset.get_list(g.project_info.id)
+            if dataset.name in datasets_to_heatmap
+        ]
     else:
         datasets = api.dataset.get_list(g.project_info.id)
     if avg_img_size is None:
@@ -87,7 +100,10 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
         {"field": "state.progressTotalClasses", "payload": len(state["selectedClasses"])},
         {"field": "state.currentClass", "payload": class_name},
         {"field": "state.progressCurrentClasses", "payload": class_idx + 1},
-        {"field": "state.progressPercentClasses", "payload": int((class_idx + 1) / len(state["selectedClasses"]) * 100)},
+        {
+            "field": "state.progressPercentClasses",
+            "payload": int((class_idx + 1) / len(state["selectedClasses"]) * 100),
+        },
     ]
     g.api.app.set_fields(g.task_id, fields)
 
@@ -99,7 +115,7 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
         random.shuffle(images)
         if imagesCount > 0:
             if ds_idx >= len(datasets) - 1:
-                images = images[:imagesCount-included_images]
+                images = images[: imagesCount - included_images]
             else:
                 img_cnt = int(len(images) * imagesPart)
                 images = images[:img_cnt]
@@ -112,7 +128,10 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
                 ann = ann.resize(avg_img_size)
                 temp_canvas = np.zeros(avg_img_size + (3,), dtype=np.uint8)
                 for label in ann.labels:
-                    if label.obj_class.name == class_name and label.geometry.geometry_name() in geometry_types_to_heatmap:
+                    if (
+                        label.obj_class.name == class_name
+                        and label.geometry.geometry_name() in geometry_types_to_heatmap
+                    ):
                         ann = ann.delete_label(label)
                         label.draw(temp_canvas, color=(1, 1, 1))
                 heatmap += temp_canvas
@@ -120,20 +139,23 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
             included_images += len(item_infos)
             fields = [
                 {"field": "state.progressCurrentHeatmap", "payload": included_images},
-                {"field": "state.progressPercentHeatmap", "payload": int(included_images / imagesCount * 100)},
+                {
+                    "field": "state.progressPercentHeatmap",
+                    "payload": int(included_images / imagesCount * 100),
+                },
             ]
             g.api.app.set_fields(g.task_id, fields)
-
 
     os.makedirs("imgs", exist_ok=True)
     local_filename = os.path.join("imgs", f"heatmap_{class_name}_{datetime.now()}.png")
     fig = plt.figure(figsize=(avg_img_size[1] / 80.0, avg_img_size[0] / 80.0))
 
-    plt.imshow(heatmap[:,:,0], cmap=cmap)
+    plt.imshow(heatmap[:, :, 0], cmap=cmap)
     plt.colorbar(cmap=cmap)
-    plt.savefig(local_filename, fig=fig, bbox_inches='tight',pad_inches = 0)
+    plt.savefig(local_filename, fig=fig, bbox_inches="tight", pad_inches=0)
 
     return heatmap, local_filename, avg_img_size
+
 
 @g.my_app.callback("build_heatmap")
 @sly.timeit
@@ -146,8 +168,12 @@ def build_heatmap(api: sly.Api, task_id, context, state, app_logger):
     try:
         classes = state["selectedClasses"]
         for class_idx, class_name in enumerate(classes):
-            heatmap, filename, avg_img_size = get_heatmap_image(api, state, class_name, class_idx, avg_img_size)
-            file_info = api.file.upload(g.team_id, filename, filename)
+            heatmap, filename, avg_img_size = get_heatmap_image(
+                api, state, class_name, class_idx, avg_img_size
+            )
+            file_info = api.file.upload(
+                g.team_id, filename, os.path.join(g.remote_files_dir, filename)
+            )
             filenames.append({"class": class_name, "url": file_info.storage_path})
         step_done = True
     except Exception as e:
@@ -161,10 +187,11 @@ def build_heatmap(api: sly.Api, task_id, context, state, app_logger):
             {"field": f"data.resultFilenames", "payload": filenames},
         ]
         if step_done is True:
-            fields.extend([
-                {"field": "state.collapsed5", "payload": False},
-                {"field": "state.disabled5", "payload": False},
-                {"field": "state.activeStep", "payload": 5},
-            ])
+            fields.extend(
+                [
+                    {"field": "state.collapsed5", "payload": False},
+                    {"field": "state.disabled5", "payload": False},
+                    {"field": "state.activeStep", "payload": 5},
+                ]
+            )
         g.api.app.set_fields(g.task_id, fields)
-

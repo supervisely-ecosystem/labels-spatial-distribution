@@ -1,2 +1,9 @@
 secret_debug.env
 imgs
+
+
+src/__pycache__
+src/ui/__pycache__
+venv
+.venv
+supervisely
