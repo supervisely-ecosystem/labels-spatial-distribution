@@ -23,7 +23,7 @@ def init(data, state):
 @sly.timeit
 @g.my_app.ignore_errors_and_show_dialog_window()
 def restart(api: sly.Api, task_id, context, state, app_logger):
-    restart_from_step = state["restartFrom"]
+    restart_from_step = state["restartFrom"] or 1
     data = {}
     state = {}
 
