@@ -17,7 +17,7 @@ def init(project_info, project_meta: sly.ProjectMeta, data, state):
         train_count = int(project_info.items_count / 100 * train_percent)
     else:
         sly.logger.warn("Project is empty.")
-        return
+        raise RuntimeError("Project is empty. Please add data to the project to proceed.")
     state["randomSplit"] = {
         "count": {"total": project_info.items_count, "included_data": train_count},
         "percent": {"total": 100, "included_data": train_percent},
