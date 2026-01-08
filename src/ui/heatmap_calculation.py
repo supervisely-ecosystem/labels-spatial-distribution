@@ -80,9 +80,9 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
     cmap = plt.cm.get_cmap("viridis")
     meta_json = api.project.get_meta(g.project_info.id)
     meta = sly.ProjectMeta.from_json(meta_json)
-    if imagesCount is None:
-        sly.logger.warn(f"Images count is None. Cannot generate heatmap.")
-        return
+    if imagesCount is None or imagesCount == 0:
+        raise RuntimeError("Project is empty. Please add data to the project to proceed.")
+
     imagesPart = imagesCount / g.project_info.items_count
 
     if datasets_to_heatmap:
