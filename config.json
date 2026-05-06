@@ -10,7 +10,7 @@
 	],
 	"description": "Build labels distribution heatmap for dataset.",
 	"docker_image": "supervisely/visualization-stats:6.73.564",
-	"instance_version": "6.9.22",
+	"instance_version": "6.15.60",
 	"main_script": "src/main.py",
 	"gui_template": "src/gui.html",
 	"task_location": "workspace_tasks",
