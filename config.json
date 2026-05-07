@@ -1,26 +1,28 @@
 {
-	"name": "Labels spatial distribution",
-	"type": "app",
-	"categories": [
-		"images",
-		"visualization",
-		"exploration",
-		"statistics",
-		"visualization stats"
-	],
-	"description": "Build labels distribution heatmap for dataset.",
-	"docker_image": "supervisely/visualization-stats:6.73.104",
-	"instance_version": "6.9.22",
-	"main_script": "src/main.py",
-	"gui_template": "src/gui.html",
-	"task_location": "workspace_tasks",
-	"isolate": true,
-	"context_menu": {
-		"target": ["images_project"],
-		"context_root": "Report"
-	},
-	"icon": "https://i.imgur.com/hH7CUDa.png",
-	"icon_cover": true,
-	"icon_background": "#FFFFFF",
-	"poster": "https://i.imgur.com/MGi3NXG.jpg"
+  "name": "Labels spatial distribution",
+  "type": "app",
+  "categories": [
+    "images",
+    "visualization",
+    "exploration",
+    "statistics",
+    "visualization stats"
+  ],
+  "description": "Build labels distribution heatmap for dataset.",
+  "docker_image": "supervisely/base-py-sdk-hardened:6.73.564",
+  "instance_version": "6.15.60",
+  "main_script": "src/main.py",
+  "gui_template": "src/gui.html",
+  "task_location": "workspace_tasks",
+  "isolate": true,
+  "context_menu": {
+    "target": [
+      "images_project"
+    ],
+    "context_root": "Report"
+  },
+  "icon": "https://i.imgur.com/hH7CUDa.png",
+  "icon_cover": true,
+  "icon_background": "#FFFFFF",
+  "poster": "https://i.imgur.com/MGi3NXG.jpg"
 }
