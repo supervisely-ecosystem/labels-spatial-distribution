@@ -4,9 +4,9 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
-import supervisely as sly
 
 import sly_globals as g
+import supervisely as sly
 
 
 def init_progress(index, state):
@@ -26,34 +26,6 @@ def init(data, state):
     state["currentClass"] = None
     state["collapsed4"] = True
     state["disabled4"] = True
-
-
-def _selected_dataset_keys(selected_datasets):
-    keys = set()
-    if not selected_datasets:
-        return keys
-    if not isinstance(selected_datasets, list):
-        selected_datasets = [selected_datasets]
-    for dataset in selected_datasets:
-        if isinstance(dataset, dict):
-            for key in ["id", "value", "name", "label"]:
-                if dataset.get(key) is not None:
-                    keys.add(str(dataset[key]))
-        else:
-            keys.add(str(dataset))
-    return keys
-
-
-def _get_datasets_to_heatmap(api, selected_datasets):
-    datasets = api.dataset.get_list(g.project_info.id)
-    selected_keys = _selected_dataset_keys(selected_datasets)
-    if not selected_keys:
-        return datasets
-    return [
-        dataset
-        for dataset in datasets
-        if str(dataset.id) in selected_keys or dataset.name in selected_keys
-    ]
 
 
 def calculate_avg_img_size(datasets, imagesCount, imagesPart, max_imgs_for_average=30):
@@ -115,11 +87,14 @@ def get_heatmap_image(api, state, class_name, class_idx, avg_img_size):
 
     imagesPart = imagesCount / g.project_info.items_count
 
-    datasets = _get_datasets_to_heatmap(api, datasets_to_heatmap)
-    if len(datasets) == 0:
-        raise RuntimeError("Selected datasets were not found. Please reselect datasets.")
     if datasets_to_heatmap:
-        imagesPart = 1
+        datasets = [
+            dataset
+            for dataset in api.dataset.get_list(g.project_info.id)
+            if dataset.name in datasets_to_heatmap
+        ]
+    else:
+        datasets = api.dataset.get_list(g.project_info.id)
     if avg_img_size is None:
         avg_img_size = calculate_avg_img_size(datasets, imagesCount, imagesPart)
 
