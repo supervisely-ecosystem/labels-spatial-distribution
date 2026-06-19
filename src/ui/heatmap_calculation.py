@@ -4,9 +4,9 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
-import supervisely as sly
 
 import sly_globals as g
+import supervisely as sly
 
 
 def init_progress(index, state):
@@ -65,6 +65,8 @@ def calculate_avg_img_size(datasets, imagesCount, imagesPart, max_imgs_for_avera
             g.api.app.set_fields(g.task_id, fields)
 
     g.api.app.set_field(g.task_id, "state.progressAvgSize", False)
+    if len(sizes) == 0:
+        raise RuntimeError("No images found in selected datasets. Please reselect datasets.")
     sizes = np.array(sizes)
     avg_img_size = (
         sizes[:, 0].mean().astype(np.int32).item(),
